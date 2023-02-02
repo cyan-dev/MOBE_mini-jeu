@@ -6,4 +6,58 @@
     android:layout_height="match_parent"
     tools:context=".NavigationGame">
 
+    <ImageView
+        android:id="@+id/Boat"
+        android:layout_width="131dp"
+        android:layout_height="164dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="?android:attr/fingerprintAuthDrawable" />
+
+    <TextView
+        android:id="@+id/textNord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/Boat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="x ="
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.734" />
+
+    <TextView
+        android:id="@+id/textY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="y ="
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textX"
+        app:layout_constraintVertical_bias="0.182" />
+
+    <TextView
+        android:id="@+id/textZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="z ="
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textY"
+        app:layout_constraintVertical_bias="0.258" />
 </androidx.constraintlayout.widget.ConstraintLayout>
