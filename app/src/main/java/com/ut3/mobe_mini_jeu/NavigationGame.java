@@ -61,9 +61,14 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         updateOrientationAngles();
 
-        float xDeg = (float)(Math.toDegrees(orientationAngles[0])+360)%360;
-        float yDeg = (float)(Math.toDegrees(orientationAngles[1])+360)%360;
-        float zDeg = (float)(Math.toDegrees(orientationAngles[2])+360)%360;
+        int xDeg = (int) (Math.toDegrees(orientationAngles[0])+360)%360;
+        int yDeg = (int)(Math.toDegrees(orientationAngles[1])+360)%360;
+        int zDeg = (int)(Math.toDegrees(orientationAngles[2])+360)%360;
+
+        //Smooth values
+        xDeg /= 45;
+        yDeg /= 45;
+        zDeg /= 45;
 
 
 
