@@ -6,4 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".NavigationGame">
 
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="640px"
+        android:layout_height="640px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ship_1_fast" />
 </androidx.constraintlayout.widget.ConstraintLayout>
