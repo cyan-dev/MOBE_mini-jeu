@@ -35,6 +35,27 @@ public class NavigationGame extends AppCompatActivity {
     private class Treasure {
         private Direction dir;
         private double dist;
+
+        public Treasure(Direction dir, double dist) {
+            this.dir = dir;
+            this.dist = dist;
+        }
+
+        public Direction getDir() {
+            return dir;
+        }
+
+        public void setDir(Direction dir) {
+            this.dir = dir;
+        }
+
+        public double getDist() {
+            return dist;
+        }
+
+        public void setDist(double dist) {
+            this.dist = dist;
+        }
     }
 
 
