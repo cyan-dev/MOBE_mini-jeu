@@ -11,7 +11,7 @@
         android:id="@+id/imageView3"
         android:layout_width="320px"
         android:layout_height="320px"
-        android:layout_marginTop="152dp"
+        android:layout_marginTop="64dp"
         android:rotation="90"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
@@ -34,7 +34,7 @@
 
     <ProgressBar
         android:id="@+id/hpBar"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,5 +43,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.002" />
+
+    <ProgressBar
+        android:id="@+id/hpBarEnnemy"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        app:layout_constraintVertical_bias="0.027" />
+
+    <ProgressBar
+        android:id="@+id/shotProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="320px"
+        android:layout_height="320px"
+        android:progressDrawable="@drawable/custom_progress"
+        android:rotation="-90"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hpBarEnnemy"
+        app:layout_constraintVertical_bias="0.108" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
