@@ -45,34 +45,8 @@ public class GameFight extends AppCompatActivity {
     private Runnable launch = new Runnable() {
         @Override
         public void run() {
-            //If a pressure is detect increase the damage inflict
-            if (pressure) {
-                if (!pressureMustBeRelease) {
-                    progress++;
-                    if (progress == 100) {
-                        pressureMustBeRelease = true;
-                    }
-                    //Decreasing the damage inflict because the pressure isn't release
-                } else {
-                    progress--;
-                    if (progress == MIN_BEFORE_SHOT_AR_INCREASE) {
-                        pressureMustBeRelease = false;
-                    }
-                }
-                //Release detected
-            } else if (progress > 0) {
 
-                ship.setImageResource(R.drawable.ship_1_canon_fire);
-                shipShot = true;
-
-                lifePointEnemy -= progress / 5;
-                lifePointEnemyBar.setProgress(lifePointEnemy);
-
-                pressureMustBeRelease = false;
-                progress = 0;
-
-            }
-            shotBar.setProgress(progress);
+            pressureBeforeShooting();
 
             if(--timer == DELAY_BETWEEN_ANIMATION){
                 enemyShip.setImageResource(R.drawable.ship_2_canon_fire);
@@ -94,6 +68,37 @@ public class GameFight extends AppCompatActivity {
             handler.postDelayed(launch, 10);
         }
     };
+
+    private void pressureBeforeShooting(){
+        //If a pressure is detect increase the damage inflict
+        if (pressure) {
+            if (!pressureMustBeRelease) {
+                progress++;
+                if (progress == 100) {
+                    pressureMustBeRelease = true;
+                }
+                //Decreasing the damage inflict because the pressure isn't release
+            } else {
+                progress--;
+                if (progress == MIN_BEFORE_SHOT_AR_INCREASE) {
+                    pressureMustBeRelease = false;
+                }
+            }
+            //Release detected
+        } else if (progress > 0) {
+
+            ship.setImageResource(R.drawable.ship_1_canon_fire);
+            shipShot = true;
+
+            lifePointEnemy -= progress / 5;
+            lifePointEnemyBar.setProgress(lifePointEnemy);
+
+            pressureMustBeRelease = false;
+            progress = 0;
+
+        }
+        shotBar.setProgress(progress);
+    }
 
     //Function to set up the shot progress bar
     private void setUpShotBar(){
