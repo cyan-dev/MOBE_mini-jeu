@@ -8,7 +8,7 @@
     tools:context=".GameFight">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/allyShip"
         android:layout_width="320px"
         android:layout_height="320px"
         android:layout_marginTop="64dp"
@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/ship_1_canon_idle" />
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/foeShip"
         android:layout_width="320px"
         android:layout_height="320px"
         android:rotation="-90"
@@ -28,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/allyShip"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ship_2_canon_idle" />
 
@@ -53,7 +53,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        app:layout_constraintTop_toBottomOf="@+id/foeShip"
         app:layout_constraintVertical_bias="0.027" />
 
     <ProgressBar

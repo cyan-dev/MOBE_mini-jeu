@@ -2,21 +2,29 @@ package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 public class GameFight extends AppCompatActivity {
+    final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
+    final int MIN_BEFORE_SHOT_AR_INCREASE = 80;
+
+    ImageView ship;
+    ImageView enemyShip;
 
     ProgressBar lifePointBar;
-    ProgressBar lifePointEnnemyBar;
+    ProgressBar lifePointEnemyBar;
     ProgressBar shotBar;
+
     int lifePoint = 100;
-    int lifePointEnnemy = 100;
+    int lifePointEnemy = 100;
 
     //Progress of the shot progress bar
     int progress = 0;
@@ -24,7 +32,10 @@ public class GameFight extends AppCompatActivity {
     //Timer to decrease before receiving damage
     int timer = TIMER_BEFORE_RECEIVING_DAMAGE;
 
+    int timerIdleCanon = DELAY_BETWEEN_ANIMATION;
+
     boolean pressure;
+    boolean shipShot = false;
 
     //Boolean to choose if the shot progress bar must be release
     boolean pressureMustBeRelease = false;
@@ -35,24 +46,27 @@ public class GameFight extends AppCompatActivity {
         @Override
         public void run() {
             //If a pressure is detect increase the damage inflict
-            if(pressure) {
-                if(!pressureMustBeRelease) {
+            if (pressure) {
+                if (!pressureMustBeRelease) {
                     progress++;
-                    if(progress == 100){
+                    if (progress == 100) {
                         pressureMustBeRelease = true;
                     }
-                //Decreasing the damage inflict because the pressure isn't release
-                }else{
+                    //Decreasing the damage inflict because the pressure isn't release
+                } else {
                     progress--;
-                    if(progress == 80){
+                    if (progress == MIN_BEFORE_SHOT_AR_INCREASE) {
                         pressureMustBeRelease = false;
                     }
                 }
-            //Release detected
-            }else if(progress > 0) {
+                //Release detected
+            } else if (progress > 0) {
 
-                lifePointEnnemy -= progress / 5;
-                lifePointEnnemyBar.setProgress(lifePointEnnemy);
+                ship.setImageResource(R.drawable.ship_1_canon_fire);
+                shipShot = true;
+
+                lifePointEnemy -= progress / 5;
+                lifePointEnemyBar.setProgress(lifePointEnemy);
 
                 pressureMustBeRelease = false;
                 progress = 0;
@@ -60,11 +74,21 @@ public class GameFight extends AppCompatActivity {
             }
             shotBar.setProgress(progress);
 
+            if(--timer == DELAY_BETWEEN_ANIMATION){
+                enemyShip.setImageResource(R.drawable.ship_2_canon_fire);
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
-            if(--timer == 0){
+            } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
                 lifePoint -= 10;
                 lifePointBar.setProgress(lifePoint);
+                enemyShip.setImageResource(R.drawable.ship_2_canon_idle);
+            }
+
+            //Removing the animation of the canon
+            if(shipShot && --timerIdleCanon == 0){
+                timerIdleCanon = DELAY_BETWEEN_ANIMATION;
+                shipShot = false;
+                ship.setImageResource(R.drawable.ship_1_canon_idle);
             }
 
             handler.postDelayed(launch, 10);
@@ -98,10 +122,13 @@ public class GameFight extends AppCompatActivity {
         lifePointBar = (ProgressBar) this.findViewById(R.id.hpBar);
         lifePointBar.setProgress(lifePoint);
 
-        lifePointEnnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
-        lifePointEnnemyBar.setProgress(lifePointEnnemy);
+        lifePointEnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
+        lifePointEnemyBar.setProgress(lifePointEnemy);
 
         setUpShotBar();
+
+        ship = (ImageView) this.findViewById(R.id.allyShip);
+        enemyShip = (ImageView) this.findViewById(R.id.foeShip);
 
         handler.postDelayed(launch, 1000);
     }
