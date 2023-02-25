@@ -10,30 +10,68 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 public class GameFight extends AppCompatActivity {
-    ProgressBar lifePoint;
-    ProgressBar lifePointEnnemy;
+    final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
+
+    ProgressBar lifePointBar;
+    ProgressBar lifePointEnnemyBar;
     ProgressBar shotBar;
-    int LifePointEnemy;
+    int lifePoint = 100;
+    int lifePointEnnemy = 100;
+
+    //Progress of the shot progress bar
     int progress = 0;
+
+    //Timer to decrease before receiving damage
+    int timer = TIMER_BEFORE_RECEIVING_DAMAGE;
+
     boolean pressure;
+
+    //Boolean to choose if the shot progress bar must be release
+    boolean pressureMustBeRelease = false;
 
     private Handler handler = new Handler();
 
     private Runnable launch = new Runnable() {
         @Override
         public void run() {
-            Log.d("Pression", "run !");
+            //If a pressure is detect increase the damage inflict
             if(pressure) {
-                shotBar.setProgress(++progress);
-            }else{
+                if(!pressureMustBeRelease) {
+                    progress++;
+                    if(progress == 100){
+                        pressureMustBeRelease = true;
+                    }
+                //Decreasing the damage inflict because the pressure isn't release
+                }else{
+                    progress--;
+                    if(progress == 80){
+                        pressureMustBeRelease = false;
+                    }
+                }
+            //Release detected
+            }else if(progress > 0) {
+
+                lifePointEnnemy -= progress / 5;
+                lifePointEnnemyBar.setProgress(lifePointEnnemy);
+
+                pressureMustBeRelease = false;
                 progress = 0;
-                shotBar.setProgress(progress);
+
+            }
+            shotBar.setProgress(progress);
+
+            //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
+            if(--timer == 0){
+                timer = TIMER_BEFORE_RECEIVING_DAMAGE;
+                lifePoint -= 10;
+                lifePointBar.setProgress(lifePoint);
             }
 
             handler.postDelayed(launch, 10);
         }
     };
 
+    //Function to set up the shot progress bar
     private void setUpShotBar(){
         shotBar = (ProgressBar) this.findViewById(R.id.shotProgressBar);
         shotBar.setProgress(0);
@@ -46,9 +84,8 @@ public class GameFight extends AppCompatActivity {
                     return true;
                 } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     pressure = false;
-                    return false;
                 }
-                return true;
+                return false;
             }
         });
     }
@@ -58,11 +95,11 @@ public class GameFight extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_fight);
 
-        lifePoint = (ProgressBar) this.findViewById(R.id.hpBar);
-        lifePoint.setProgress(100);
+        lifePointBar = (ProgressBar) this.findViewById(R.id.hpBar);
+        lifePointBar.setProgress(lifePoint);
 
-        lifePointEnnemy = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
-        lifePointEnnemy.setProgress(100);
+        lifePointEnnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
+        lifePointEnnemyBar.setProgress(lifePointEnnemy);
 
         setUpShotBar();
 
