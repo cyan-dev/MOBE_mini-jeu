@@ -2,8 +2,10 @@ package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +17,8 @@ public class GameFight extends AppCompatActivity {
     final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
     final int MIN_BEFORE_SHOT_AR_INCREASE = 0;
+
+    private Vibrator vibrator;
 
     ImageView ship;
     ImageView enemyShip;
@@ -51,20 +55,20 @@ public class GameFight extends AppCompatActivity {
             pressureBeforeShooting();
 
             if(--timer == DELAY_BETWEEN_ANIMATION){
-                enemyShip.setImageResource(R.drawable.ship_2_canon_fire);
+                enemyShip.setImageResource(R.drawable.ship2_canon_fire);
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
             } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
                 lifePoint -= 10;
                 lifePointBar.setProgress(lifePoint);
-                enemyShip.setImageResource(R.drawable.ship_2_canon_idle);
+                enemyShip.setImageResource(R.drawable.ship2_canon_idle);
             }
 
             //Removing the animation of the canon
             if(shipShot && --timerIdleCanon == 0){
                 timerIdleCanon = DELAY_BETWEEN_ANIMATION;
                 shipShot = false;
-                ship.setImageResource(R.drawable.ship_1_canon_idle);
+                ship.setImageResource(R.drawable.ship1_canon_idle);
             }
 
             handler.postDelayed(launch, 10);
@@ -89,11 +93,16 @@ public class GameFight extends AppCompatActivity {
             //Release detected
         } else if (progress > 0) {
 
-            ship.setImageResource(R.drawable.ship_1_canon_fire);
+            ship.setImageResource(R.drawable.ship1_canon_fire);
             shipShot = true;
 
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
+
+            //Vibration
+            if(vibrator.hasVibrator()){
+                vibrator.vibrate(1000);
+            }
 
             //Update of the score
             int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
@@ -140,6 +149,8 @@ public class GameFight extends AppCompatActivity {
 
         scoreText = (TextView) this.findViewById(R.id.scoreText);
         scoreText.setText("0");
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         setUpShotBar();
 
