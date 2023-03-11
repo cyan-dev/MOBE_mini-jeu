@@ -7,6 +7,8 @@ import java.util.Random;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -85,10 +87,11 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private int randomIndex = 0;
+    MediaPlayer coinSoundPlayer = MediaPlayer.create(this, Uri.parse("/toto"));
 
     private void game(View shipView, Boat boat, Treasure treasure) {
         boolean isFight = updateEnemyFight();
-        System.out.println(randomIndex);
+
         if (!isFight) {
             updateTreasureDist(boat, treasure);
             shipView.postDelayed(new Runnable() {
@@ -99,7 +102,7 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private boolean updateEnemyFight() {
-        int random = new Random().nextInt(1000 - randomIndex);
+        int random = new Random().nextInt(2000 - randomIndex);
         boolean isFight = false;
 
         if (random == 0) {
@@ -118,7 +121,8 @@ public class NavigationGame extends AppCompatActivity {
             treasure.setDist(treasure.getDist() - boat.getSpeed());
         }
 
-        if (treasure.getDist() < 0) {
+        if (treasure.getDist() < - 10) {
+            coinSoundPlayer.start();
             treasure.regenerate();
         }
         View treasureView = findViewById(R.id.treasureView);
