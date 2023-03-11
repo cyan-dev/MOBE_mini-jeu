@@ -41,7 +41,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ship_1_fast" />
+        app:srcCompat="@drawable/ship1_fast" />
 
     <TextView
         android:id="@+id/titleTxt"
