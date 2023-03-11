@@ -20,7 +20,7 @@
         app:srcCompat="@drawable/ocean" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/shipView"
         android:layout_width="640px"
         android:layout_height="640px"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,4 +41,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/treasureView"
+        android:layout_width="320px"
+        android:layout_height="320px"
+        app:layout_constraintBottom_toTopOf="@+id/shipView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/box" />
 </androidx.constraintlayout.widget.ConstraintLayout>
