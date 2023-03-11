@@ -51,20 +51,20 @@ public class GameFight extends AppCompatActivity {
             pressureBeforeShooting();
 
             if(--timer == DELAY_BETWEEN_ANIMATION){
-                enemyShip.setImageResource(R.drawable.ship_2_canon_fire);
+                enemyShip.setImageResource(R.drawable.ship2_canon_fire);
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
             } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
                 lifePoint -= 10;
                 lifePointBar.setProgress(lifePoint);
-                enemyShip.setImageResource(R.drawable.ship_2_canon_idle);
+                enemyShip.setImageResource(R.drawable.ship2_canon_idle);
             }
 
             //Removing the animation of the canon
             if(shipShot && --timerIdleCanon == 0){
                 timerIdleCanon = DELAY_BETWEEN_ANIMATION;
                 shipShot = false;
-                ship.setImageResource(R.drawable.ship_1_canon_idle);
+                ship.setImageResource(R.drawable.ship1_canon_idle);
             }
 
             handler.postDelayed(launch, 10);
@@ -89,7 +89,7 @@ public class GameFight extends AppCompatActivity {
             //Release detected
         } else if (progress > 0) {
 
-            ship.setImageResource(R.drawable.ship_1_canon_fire);
+            ship.setImageResource(R.drawable.ship1_canon_fire);
             shipShot = true;
 
             lifePointEnemy -= progress / 5;
