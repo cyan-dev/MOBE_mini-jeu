@@ -2,7 +2,6 @@ package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,11 +9,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class GameFight extends AppCompatActivity {
     final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
-    final int MIN_BEFORE_SHOT_AR_INCREASE = 80;
+    final int MIN_BEFORE_SHOT_AR_INCREASE = 0;
 
     ImageView ship;
     ImageView enemyShip;
@@ -22,6 +22,8 @@ public class GameFight extends AppCompatActivity {
     ProgressBar lifePointBar;
     ProgressBar lifePointEnemyBar;
     ProgressBar shotBar;
+
+    TextView scoreText;
 
     int lifePoint = 100;
     int lifePointEnemy = 100;
@@ -73,13 +75,13 @@ public class GameFight extends AppCompatActivity {
         //If a pressure is detect increase the damage inflict
         if (pressure) {
             if (!pressureMustBeRelease) {
-                progress++;
+                progress += 2;
                 if (progress == 100) {
                     pressureMustBeRelease = true;
                 }
                 //Decreasing the damage inflict because the pressure isn't release
             } else {
-                progress--;
+                progress -= 2;
                 if (progress == MIN_BEFORE_SHOT_AR_INCREASE) {
                     pressureMustBeRelease = false;
                 }
@@ -92,6 +94,12 @@ public class GameFight extends AppCompatActivity {
 
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
+
+            //Update of the score
+            int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
+            String scoreString = "" + calculScore;
+
+            scoreText.setText(scoreString.toCharArray(), 0, scoreString.length());
 
             pressureMustBeRelease = false;
             progress = 0;
@@ -129,6 +137,9 @@ public class GameFight extends AppCompatActivity {
 
         lifePointEnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
         lifePointEnemyBar.setProgress(lifePointEnemy);
+
+        scoreText = (TextView) this.findViewById(R.id.scoreText);
+        scoreText.setText("0");
 
         setUpShotBar();
 

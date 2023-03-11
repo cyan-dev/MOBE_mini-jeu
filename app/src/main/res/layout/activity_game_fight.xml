@@ -70,4 +70,27 @@
         app:layout_constraintTop_toBottomOf="@+id/hpBarEnnemy"
         app:layout_constraintVertical_bias="0.108" />
 
+    <ImageView
+        android:id="@+id/coinImage"
+        android:layout_width="160px"
+        android:layout_height="160px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hpBar"
+        app:layout_constraintVertical_bias="0.004"
+        app:srcCompat="@drawable/coin" />
+
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="128px"
+        android:layout_height="64px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/coinImage"
+        app:layout_constraintTop_toTopOf="@+id/hpBar"
+        app:layout_constraintVertical_bias="0.095" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
