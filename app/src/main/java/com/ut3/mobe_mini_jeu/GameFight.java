@@ -2,8 +2,10 @@ package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,6 +17,8 @@ public class GameFight extends AppCompatActivity {
     final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
     final int MIN_BEFORE_SHOT_AR_INCREASE = 0;
+
+    private Vibrator vibrator;
 
     ImageView ship;
     ImageView enemyShip;
@@ -95,6 +99,11 @@ public class GameFight extends AppCompatActivity {
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
 
+            //Vibration
+            if(vibrator.hasVibrator()){
+                vibrator.vibrate(1000);
+            }
+
             //Update of the score
             int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
             String scoreString = "" + calculScore;
@@ -140,6 +149,8 @@ public class GameFight extends AppCompatActivity {
 
         scoreText = (TextView) this.findViewById(R.id.scoreText);
         scoreText.setText("0");
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         setUpShotBar();
 
