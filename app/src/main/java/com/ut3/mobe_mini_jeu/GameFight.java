@@ -91,7 +91,7 @@ public class GameFight extends AppCompatActivity {
 
             //Changing activity
             if(shipDown){
-                changingActivityScoreBoard();
+                changingActivityMainMenu();
             }else if(enemyShipDown){
                 changingActivityNavigationGame();
             }else{
@@ -149,8 +149,8 @@ public class GameFight extends AppCompatActivity {
         shotBar.setProgress(progress);
     }
 
-    private void changingActivityScoreBoard(){
-        Intent intent = new Intent(this, ScoreBoard.class);
+    private void changingActivityMainMenu(){
+        Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
     private void changingActivityNavigationGame() {
