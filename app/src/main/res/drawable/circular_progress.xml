@@ -4,9 +4,9 @@
     android:toDegrees="270">
 
     <shape
-        android:innerRadiusRatio="2.5"
+        android:innerRadiusRatio="4"
         android:shape="ring"
-        android:thickness="10dp"
+        android:thickness="15dp"
         android:useLevel="false">
 
         <gradient

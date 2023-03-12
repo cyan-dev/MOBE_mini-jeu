@@ -132,7 +132,7 @@ public class GameFight extends AppCompatActivity {
 
             //Vibration
             if(vibrator.hasVibrator()){
-                vibrator.vibrate(200);
+                vibrator.vibrate(100);
             }
 
             //Update of the score
