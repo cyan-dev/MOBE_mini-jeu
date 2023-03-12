@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -46,6 +47,8 @@ public class GameFight extends AppCompatActivity {
 
     boolean pressure;
     boolean shipShot = false;
+    boolean enemyShipDown = false;
+    boolean shipDown = false;
 
     //Boolean to choose if the shot progress bar must be release
     boolean pressureMustBeRelease = false;
@@ -68,6 +71,9 @@ public class GameFight extends AppCompatActivity {
                 lifePoint -= 10;
                 lifePointBar.setProgress(lifePoint);
                 enemyShip.setImageResource(R.drawable.ship2_canon_idle);
+                if(lifePoint <= 0){
+                    shipDown = true;
+                }
             }
 
             //Removing the animation of the canon
@@ -77,7 +83,16 @@ public class GameFight extends AppCompatActivity {
                 ship.setImageResource(R.drawable.ship1_canon_idle);
             }
 
-            handler.postDelayed(launch, 10);
+
+            //Changing activity
+            if(shipDown){
+                changingActivityScoreBoard();
+            }else if(enemyShipDown){
+                changingActivityNavigationGame();
+            }else{
+                handler.postDelayed(launch, 10);
+            }
+
         }
     };
 
@@ -107,6 +122,10 @@ public class GameFight extends AppCompatActivity {
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
 
+            if(lifePointEnemy <= 0){
+                enemyShipDown = true;
+            }
+
             //Vibration
             if(vibrator.hasVibrator()){
                 vibrator.vibrate(200);
@@ -116,6 +135,7 @@ public class GameFight extends AppCompatActivity {
             int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
             String scoreString = "" + calculScore;
 
+
             scoreText.setText(scoreString.toCharArray(), 0, scoreString.length());
 
             pressureMustBeRelease = false;
@@ -123,6 +143,15 @@ public class GameFight extends AppCompatActivity {
 
         }
         shotBar.setProgress(progress);
+    }
+
+    private void changingActivityScoreBoard(){
+        Intent intent = new Intent(this, ScoreBoard.class);
+        startActivity(intent);
+    }
+    private void changingActivityNavigationGame() {
+        Intent intent = new Intent(this, NavigationGame.class);
+        startActivity(intent);
     }
 
     //Function to set up the shot progress bar
@@ -142,18 +171,6 @@ public class GameFight extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    private AnimatorSet createAnimation(ImageView shipParam){
-        // Vibrate the image
-        ObjectAnimator shakeAnimator = ObjectAnimator.ofFloat(shipParam, "translationY", 0f, 20f, 0f, -20f, 0f);
-        shakeAnimator.setDuration(200);
-
-        // Fusing the animations
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(shakeAnimator, shakeAnimator);
-
-        return animatorSet;
     }
 
     @Override
