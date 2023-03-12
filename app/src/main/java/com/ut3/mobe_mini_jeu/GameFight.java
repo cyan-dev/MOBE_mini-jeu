@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -33,6 +34,9 @@ public class GameFight extends AppCompatActivity {
     ProgressBar shotBar;
 
     TextView scoreText;
+
+    MediaPlayer shootingEffect;
+    MediaPlayer enemyShootingEffect;
 
     int lifePoint = 100;
     int lifePointEnemy = 100;
@@ -63,6 +67,7 @@ public class GameFight extends AppCompatActivity {
 
             if(--timer == DELAY_BETWEEN_ANIMATION){
                 enemyShip.setImageResource(R.drawable.ship2_canon_fire);
+                enemyShootingEffect.start();
 
 
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
@@ -86,7 +91,7 @@ public class GameFight extends AppCompatActivity {
 
             //Changing activity
             if(shipDown){
-                changingActivityScoreBoard();
+                changingActivityMainMenu();
             }else if(enemyShipDown){
                 changingActivityNavigationGame();
             }else{
@@ -115,9 +120,8 @@ public class GameFight extends AppCompatActivity {
         } else if (progress > 0) {
 
             ship.setImageResource(R.drawable.ship1_canon_fire);
+            shootingEffect.start();
             shipShot = true;
-
-
 
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
@@ -128,7 +132,7 @@ public class GameFight extends AppCompatActivity {
 
             //Vibration
             if(vibrator.hasVibrator()){
-                vibrator.vibrate(200);
+                vibrator.vibrate(100);
             }
 
             //Update of the score
@@ -145,8 +149,8 @@ public class GameFight extends AppCompatActivity {
         shotBar.setProgress(progress);
     }
 
-    private void changingActivityScoreBoard(){
-        Intent intent = new Intent(this, ScoreBoard.class);
+    private void changingActivityMainMenu(){
+        Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
     private void changingActivityNavigationGame() {
@@ -189,6 +193,8 @@ public class GameFight extends AppCompatActivity {
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
+        shootingEffect = MediaPlayer.create(this, R.raw.fire1);
+        enemyShootingEffect = MediaPlayer.create(this, R.raw.fire2);
 
         setUpShotBar();
 

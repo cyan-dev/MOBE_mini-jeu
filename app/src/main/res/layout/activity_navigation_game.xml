@@ -23,12 +23,12 @@
         android:id="@+id/scoreLabel"
         android:layout_width="128px"
         android:layout_height="64px"
-        android:layout_marginBottom="640dp"
+        android:textColor="#FFEB3B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/coinImage3"
-        app:layout_constraintTop_toTopOf="@+id/hpBar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.095" />
 
     <ImageView
@@ -56,17 +56,6 @@
         app:layout_constraintVertical_bias="0.778"
         app:srcCompat="@drawable/ship1_fast" />
 
-    <ProgressBar
-        android:id="@+id/lifePointsBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:max="100"
-        android:progress="80"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/treasureView"
         android:layout_width="320px"
@@ -77,4 +66,26 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/box" />
+
+     <ProgressBar
+        android:id="@+id/lifePointsBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:max="100"
+        android:progress="80"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:max="100"
+        android:progress="80"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
