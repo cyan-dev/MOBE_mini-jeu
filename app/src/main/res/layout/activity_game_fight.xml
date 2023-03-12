@@ -47,7 +47,7 @@
 
     <ProgressBar
         android:id="@+id/hpBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -59,7 +59,7 @@
 
     <ProgressBar
         android:id="@+id/hpBarEnnemy"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
