@@ -33,10 +33,6 @@ public class GameFight extends AppCompatActivity {
 
     TextView scoreText;
 
-    TranslateAnimation shakeAnimation;
-    AnimatorSet shipAnimatorSet;
-    AnimatorSet enemyAnimatorSet;
-
     int lifePoint = 100;
     int lifePointEnemy = 100;
 
@@ -65,7 +61,7 @@ public class GameFight extends AppCompatActivity {
             if(--timer == DELAY_BETWEEN_ANIMATION){
                 enemyShip.setImageResource(R.drawable.ship2_canon_fire);
 
-                enemyAnimatorSet.start();
+
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
             } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
@@ -106,7 +102,7 @@ public class GameFight extends AppCompatActivity {
             ship.setImageResource(R.drawable.ship1_canon_fire);
             shipShot = true;
 
-            shipAnimatorSet.start();
+
 
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
@@ -175,15 +171,6 @@ public class GameFight extends AppCompatActivity {
         scoreText.setText("0");
 
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-        //Creating a horizontal vibration animation
-        shakeAnimation = new TranslateAnimation(0, 10, 0, 0);
-        shakeAnimation.setDuration(100);
-        shakeAnimation.setInterpolator(new CycleInterpolator(5));
-
-        //Attributing the animations
-        enemyAnimatorSet = createAnimation(enemyShip);
-        shipAnimatorSet = createAnimation(ship);
 
 
         setUpShotBar();
