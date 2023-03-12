@@ -1,16 +1,14 @@
 package com.ut3.mobe_mini_jeu;
 
-import static com.ut3.mobe_mini_jeu.R.id.shipView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class NavigationGame extends AppCompatActivity {
     enum Direction {
@@ -58,8 +56,7 @@ public class NavigationGame extends AppCompatActivity {
         private int dist;
 
         Treasure() {
-            this.dir = Direction.N;
-            this.dist = (new Random()).nextInt(Treasure.MAX_DIST- Treasure.MIN_DIST)+ Treasure.MIN_DIST;
+            generate();
         }
 
         public Direction getDir() {
@@ -78,13 +75,18 @@ public class NavigationGame extends AppCompatActivity {
             this.dist = dist;
         }
 
-        public void regenerate() {
+        public void generate() {
             this.dir = Direction.N;
             this.dist = (new Random()).nextInt(Treasure.MAX_DIST- Treasure.MIN_DIST)+ Treasure.MIN_DIST;
+            points = this.dist;
         }
     }
 
+    private int score = 0;
+    private int points;
     private int randomIndex = 0;
+    private MediaPlayer coinSoundPlayer;
+
 
     private void game(View shipView, Boat boat, Treasure treasure) {
         boolean isFight = updateEnemyFight();
@@ -99,7 +101,7 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private boolean updateEnemyFight() {
-        int random = new Random().nextInt(1000 - randomIndex);
+        int random = new Random().nextInt(5000 - randomIndex);
         boolean isFight = false;
 
         if (random == 0) {
@@ -113,13 +115,21 @@ public class NavigationGame extends AppCompatActivity {
         return isFight;
     }
 
+    private void updateScore() {
+        score += points;
+        TextView scoreLabel = (TextView) findViewById(R.id.scoreLabel);
+        scoreLabel.setText(Integer.toString(score));
+    }
+
     private void updateTreasureDist(Boat boat, Treasure treasure) {
         if (boat.getDir() == treasure.getDir()) {
             treasure.setDist(treasure.getDist() - boat.getSpeed());
         }
 
         if (treasure.getDist() < 0) {
-            treasure.regenerate();
+            coinSoundPlayer.start();
+            treasure.generate();
+            updateScore();
         }
         View treasureView = findViewById(R.id.treasureView);
 
@@ -136,6 +146,7 @@ public class NavigationGame extends AppCompatActivity {
 
         Boat boat = new Boat(Direction.N, Boat.LOW_SPEED);
         Treasure treasure = new Treasure();
+        coinSoundPlayer = MediaPlayer.create(this, R.raw.coin);
 
         // En boucle
         View shipView = findViewById(R.id.shipView);
