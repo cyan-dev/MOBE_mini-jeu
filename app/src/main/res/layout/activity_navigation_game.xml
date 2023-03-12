@@ -67,19 +67,8 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/box" />
 
-     <ProgressBar
-        android:id="@+id/lifePointsBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:max="100"
-        android:progress="80"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/lifePointsBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"

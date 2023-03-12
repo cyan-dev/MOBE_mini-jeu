@@ -103,7 +103,7 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private boolean updateEnemyFight() {
-        int random = new Random().nextInt(3000 - randomIndex);
+        int random = new Random().nextInt(1000 - randomIndex);
         boolean isFight = false;
 
         if (random == 0) {
