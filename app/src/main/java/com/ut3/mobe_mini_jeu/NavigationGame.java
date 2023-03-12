@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Random;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class NavigationGame extends AppCompatActivity {
@@ -82,8 +84,8 @@ public class NavigationGame extends AppCompatActivity {
         }
     }
 
-    private int score = 0;
-    private int points;
+    private int lifePoints = 100;
+    private int points = 0;
     private int randomIndex = 0;
     private MediaPlayer coinSoundPlayer;
 
@@ -101,7 +103,7 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private boolean updateEnemyFight() {
-        int random = new Random().nextInt(5000 - randomIndex);
+        int random = new Random().nextInt(3000 - randomIndex);
         boolean isFight = false;
 
         if (random == 0) {
@@ -116,9 +118,31 @@ public class NavigationGame extends AppCompatActivity {
     }
 
     private void updateScore() {
+        // get pref
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        int score = prefs.getInt("score", 0);
+
+        // update score
         score += points;
+
+        // set pref
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("score", score);
+        editor.apply();
+
+        // update view
         TextView scoreLabel = (TextView) findViewById(R.id.scoreLabel);
         scoreLabel.setText(Integer.toString(score));
+    }
+
+    private void updateLifePoints() {
+        // get pref
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        int lifePoints = prefs.getInt("lifePoints", 100);
+
+        // updateView
+        ProgressBar lifePointsBar = findViewById(R.id.lifePointsBar);
+        lifePointsBar.setProgress(lifePoints);
     }
 
     private void updateTreasureDist(Boat boat, Treasure treasure) {
@@ -128,8 +152,8 @@ public class NavigationGame extends AppCompatActivity {
 
         if (treasure.getDist() < 0) {
             coinSoundPlayer.start();
-            treasure.generate();
             updateScore();
+            treasure.generate();
         }
         View treasureView = findViewById(R.id.treasureView);
 
@@ -138,11 +162,32 @@ public class NavigationGame extends AppCompatActivity {
         treasureView.setLayoutParams(params);
     }
 
+    private void initializeSharedPreferences() {
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (!prefs.contains("score")) {
+            editor.putInt("score", 0);
+            editor.apply();
+        }
+        if (!prefs.contains("lifePoints")) {
+            editor.putInt("lifePoints", 100);
+            editor.apply();
+        }
+    }
+
+    private void initializeHUD() {
+        updateScore();
+        updateLifePoints();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_game);
+
+        initializeSharedPreferences();
+        initializeHUD();
 
         Boat boat = new Boat(Direction.N, Boat.LOW_SPEED);
         Treasure treasure = new Treasure();
