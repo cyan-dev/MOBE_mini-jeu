@@ -19,6 +19,31 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ocean" />
 
+    <TextView
+        android:id="@+id/scoreLabel"
+        android:layout_width="128px"
+        android:layout_height="64px"
+        android:layout_marginBottom="640dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/coinImage3"
+        app:layout_constraintTop_toTopOf="@+id/hpBar"
+        app:layout_constraintVertical_bias="0.095" />
+
+    <ImageView
+        android:id="@+id/coinImage3"
+        android:layout_width="160px"
+        android:layout_height="160px"
+        android:layout_marginBottom="640dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        app:layout_constraintVertical_bias="0.004"
+        app:srcCompat="@drawable/coin" />
+
     <ImageView
         android:id="@+id/shipView"
         android:layout_width="640px"
