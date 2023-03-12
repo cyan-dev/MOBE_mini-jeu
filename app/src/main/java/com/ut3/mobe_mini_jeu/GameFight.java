@@ -2,11 +2,18 @@ package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +22,8 @@ public class GameFight extends AppCompatActivity {
     final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
     final int MIN_BEFORE_SHOT_AR_INCREASE = 0;
+
+    private Vibrator vibrator;
 
     ImageView ship;
     ImageView enemyShip;
@@ -38,6 +47,8 @@ public class GameFight extends AppCompatActivity {
 
     boolean pressure;
     boolean shipShot = false;
+    boolean enemyShipDown = false;
+    boolean shipDown = false;
 
     //Boolean to choose if the shot progress bar must be release
     boolean pressureMustBeRelease = false;
@@ -51,23 +62,37 @@ public class GameFight extends AppCompatActivity {
             pressureBeforeShooting();
 
             if(--timer == DELAY_BETWEEN_ANIMATION){
-                enemyShip.setImageResource(R.drawable.ship_2_canon_fire);
+                enemyShip.setImageResource(R.drawable.ship2_canon_fire);
+
+
             //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
             } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
                 lifePoint -= 10;
                 lifePointBar.setProgress(lifePoint);
-                enemyShip.setImageResource(R.drawable.ship_2_canon_idle);
+                enemyShip.setImageResource(R.drawable.ship2_canon_idle);
+                if(lifePoint <= 0){
+                    shipDown = true;
+                }
             }
 
             //Removing the animation of the canon
             if(shipShot && --timerIdleCanon == 0){
                 timerIdleCanon = DELAY_BETWEEN_ANIMATION;
                 shipShot = false;
-                ship.setImageResource(R.drawable.ship_1_canon_idle);
+                ship.setImageResource(R.drawable.ship1_canon_idle);
             }
 
-            handler.postDelayed(launch, 10);
+
+            //Changing activity
+            if(shipDown){
+                changingActivityScoreBoard();
+            }else if(enemyShipDown){
+                changingActivityNavigationGame();
+            }else{
+                handler.postDelayed(launch, 10);
+            }
+
         }
     };
 
@@ -89,15 +114,27 @@ public class GameFight extends AppCompatActivity {
             //Release detected
         } else if (progress > 0) {
 
-            ship.setImageResource(R.drawable.ship_1_canon_fire);
+            ship.setImageResource(R.drawable.ship1_canon_fire);
             shipShot = true;
+
+
 
             lifePointEnemy -= progress / 5;
             lifePointEnemyBar.setProgress(lifePointEnemy);
 
+            if(lifePointEnemy <= 0){
+                enemyShipDown = true;
+            }
+
+            //Vibration
+            if(vibrator.hasVibrator()){
+                vibrator.vibrate(200);
+            }
+
             //Update of the score
             int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
             String scoreString = "" + calculScore;
+
 
             scoreText.setText(scoreString.toCharArray(), 0, scoreString.length());
 
@@ -106,6 +143,15 @@ public class GameFight extends AppCompatActivity {
 
         }
         shotBar.setProgress(progress);
+    }
+
+    private void changingActivityScoreBoard(){
+        Intent intent = new Intent(this, ScoreBoard.class);
+        startActivity(intent);
+    }
+    private void changingActivityNavigationGame() {
+        Intent intent = new Intent(this, NavigationGame.class);
+        startActivity(intent);
     }
 
     //Function to set up the shot progress bar
@@ -140,6 +186,9 @@ public class GameFight extends AppCompatActivity {
 
         scoreText = (TextView) this.findViewById(R.id.scoreText);
         scoreText.setText("0");
+
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 
         setUpShotBar();
 

@@ -8,6 +8,19 @@
     tools:context=".GameFight">
 
     <ImageView
+        android:id="@+id/ocean"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ocean" />
+
+    <ImageView
         android:id="@+id/allyShip"
         android:layout_width="320px"
         android:layout_height="320px"
@@ -17,7 +30,7 @@
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hpBar"
-        app:srcCompat="@drawable/ship_1_canon_idle" />
+        app:srcCompat="@drawable/ship1_canon_idle" />
 
     <ImageView
         android:id="@+id/foeShip"
@@ -30,11 +43,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/allyShip"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ship_2_canon_idle" />
+        app:srcCompat="@drawable/ship2_canon_idle" />
 
     <ProgressBar
         android:id="@+id/hpBar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -46,7 +59,7 @@
 
     <ProgressBar
         android:id="@+id/hpBarEnnemy"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -91,6 +104,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/coinImage"
         app:layout_constraintTop_toTopOf="@+id/hpBar"
-        app:layout_constraintVertical_bias="0.095" />
+        app:layout_constraintVertical_bias="0.097" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
