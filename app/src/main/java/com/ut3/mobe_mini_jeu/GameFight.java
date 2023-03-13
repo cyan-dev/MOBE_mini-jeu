@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,18 +20,21 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.Random;
+
 public class GameFight extends AppCompatActivity {
     final int DELAY_BETWEEN_ANIMATION = 50;
     final int TIMER_BEFORE_RECEIVING_DAMAGE = 300;
-    final int MIN_BEFORE_SHOT_AR_INCREASE = 0;
+    final int MIN_BEFORE_SHOT_ARE_INCREASE = 0;
 
+    private SharedPreferences prefs;
     private Vibrator vibrator;
 
     ImageView ship;
     ImageView enemyShip;
 
-    ProgressBar lifePointBar;
-    ProgressBar lifePointEnemyBar;
+    ProgressBar lifePointsAllyBar;
+    ProgressBar lifePointsEnemyBar;
     ProgressBar shotBar;
 
     TextView scoreText;
@@ -38,8 +42,9 @@ public class GameFight extends AppCompatActivity {
     MediaPlayer shootingEffect;
     MediaPlayer enemyShootingEffect;
 
-    int lifePoint = 100;
-    int lifePointEnemy = 100;
+    int lifePoints;
+    int lifePointsEnemy = 100;
+    int score = 0;
 
     //Progress of the shot progress bar
     int progress = 0;
@@ -70,13 +75,19 @@ public class GameFight extends AppCompatActivity {
                 enemyShootingEffect.start();
 
 
-            //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
+                //Decreasing the life point of the ship when the timer equal 0 and restart of the timer
             } else if(timer == 0){
                 timer = TIMER_BEFORE_RECEIVING_DAMAGE;
-                lifePoint -= 10;
-                lifePointBar.setProgress(lifePoint);
+                lifePoints -= 10;
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("lifePoints", lifePoints);
+                editor.apply();
+
+                updateAllyHP();
+
                 enemyShip.setImageResource(R.drawable.ship2_canon_idle);
-                if(lifePoint <= 0){
+                if(lifePoints <= 0){
                     shipDown = true;
                 }
             }
@@ -91,8 +102,18 @@ public class GameFight extends AppCompatActivity {
 
             //Changing activity
             if(shipDown){
-                changingActivityScoreBoard();
+                changingActivityMainMenu();
             }else if(enemyShipDown){
+                //Update of the score
+                score = prefs.getInt("score", 100);
+                score += new Random().nextInt(1000) + 1500;
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("score", score);
+                editor.apply();
+
+                updateScore();
+
                 changingActivityNavigationGame();
             }else{
                 handler.postDelayed(launch, 10);
@@ -112,7 +133,7 @@ public class GameFight extends AppCompatActivity {
                 //Decreasing the damage inflict because the pressure isn't release
             } else {
                 progress -= 2;
-                if (progress == MIN_BEFORE_SHOT_AR_INCREASE) {
+                if (progress == MIN_BEFORE_SHOT_ARE_INCREASE) {
                     pressureMustBeRelease = false;
                 }
             }
@@ -123,10 +144,10 @@ public class GameFight extends AppCompatActivity {
             shootingEffect.start();
             shipShot = true;
 
-            lifePointEnemy -= progress / 5;
-            lifePointEnemyBar.setProgress(lifePointEnemy);
+            lifePointsEnemy -= progress / 5;
+            updateEnemyHP();
 
-            if(lifePointEnemy <= 0){
+            if(lifePointsEnemy <= 0){
                 enemyShipDown = true;
             }
 
@@ -135,13 +156,6 @@ public class GameFight extends AppCompatActivity {
                 vibrator.vibrate(100);
             }
 
-            //Update of the score
-            int calculScore = Integer.parseInt(scoreText.getText().toString()) + progress;
-            String scoreString = "" + calculScore;
-
-
-            scoreText.setText(scoreString.toCharArray(), 0, scoreString.length());
-
             pressureMustBeRelease = false;
             progress = 0;
 
@@ -149,8 +163,8 @@ public class GameFight extends AppCompatActivity {
         shotBar.setProgress(progress);
     }
 
-    private void changingActivityScoreBoard(){
-        Intent intent = new Intent(this, ScoreBoard.class);
+    private void changingActivityMainMenu(){
+        Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);
     }
     private void changingActivityNavigationGame() {
@@ -177,29 +191,59 @@ public class GameFight extends AppCompatActivity {
         });
     }
 
+    private void setUpViews() {
+        // Ships
+        ship = (ImageView) this.findViewById(R.id.allyShip);
+        enemyShip = (ImageView) this.findViewById(R.id.foeShip);
+
+        // LifePointsBars
+        lifePointsAllyBar = (ProgressBar) this.findViewById(R.id.hpBar);
+        lifePointsEnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
+
+        // Score
+        scoreText = (TextView) this.findViewById(R.id.scoreText);
+
+        // ShotBar
+        shotBar = (ProgressBar) this.findViewById(R.id.shotProgressBar);
+    }
+
+    private void updateAllyHP() {
+        lifePoints = prefs.getInt("lifePoints", 100);
+        lifePointsAllyBar.setProgress(lifePoints);
+    }
+
+    private void updateEnemyHP() {
+        lifePointsEnemyBar.setProgress(lifePointsEnemy);
+    }
+
+    private void updateScore() {
+        score = prefs.getInt("score", 0);
+        scoreText.setText(Integer.toString(score));
+    }
+
+    private void initializeHUD() {
+        updateAllyHP();
+        updateEnemyHP();
+        updateScore();
+    }
+
+    private void initializeSFX() {
+        shootingEffect = MediaPlayer.create(this, R.raw.fire1);
+        enemyShootingEffect = MediaPlayer.create(this, R.raw.fire2);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_fight);
 
-        lifePointBar = (ProgressBar) this.findViewById(R.id.hpBar);
-        lifePointBar.setProgress(lifePoint);
-
-        lifePointEnemyBar = (ProgressBar) this.findViewById(R.id.hpBarEnnemy);
-        lifePointEnemyBar.setProgress(lifePointEnemy);
-
-        scoreText = (TextView) this.findViewById(R.id.scoreText);
-        scoreText.setText("0");
-
+        prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        shootingEffect = MediaPlayer.create(this, R.raw.fire1);
-        enemyShootingEffect = MediaPlayer.create(this, R.raw.fire2);
-
+        setUpViews();
         setUpShotBar();
-
-        ship = (ImageView) this.findViewById(R.id.allyShip);
-        enemyShip = (ImageView) this.findViewById(R.id.foeShip);
+        initializeHUD();
+        initializeSFX();
 
         handler.postDelayed(launch, 1000);
     }

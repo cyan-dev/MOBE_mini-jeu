@@ -99,6 +99,7 @@
         android:id="@+id/scoreText"
         android:layout_width="128px"
         android:layout_height="64px"
+        android:textColor="#FFEB3B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
         app:layout_constraintHorizontal_bias="0.0"
