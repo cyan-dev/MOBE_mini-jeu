@@ -74,6 +74,29 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
                     return -1;
             }
         }
+
+        static Direction getDirection(int val){
+            switch (val){
+                case 0:
+                    return N;
+                case 4:
+                    return S;
+                case 6:
+                    return E;
+                case 2:
+                    return O;
+                case 7:
+                    return NE;
+                case 1:
+                    return NO;
+                case 5:
+                    return SE;
+                case 3:
+                    return SO;
+                default:
+                    return null;
+            }
+        }
     }
 
     private class Boat {
@@ -139,11 +162,15 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         }
     }
 
-    //Variables ------------------------------------------------------------------------------------
+    //Constant -------------------------------------------------------------------------------------
+    private final int RANDOM_BEFORE_A_FIGHT = 50000;
 
+
+    //Variables
     private int lifePoints = 100;
     private int points = 0;
     private int randomIndex = 0;
+    private int xDeg = 0;
     private boolean pressure = false;
     private boolean isFighting = false;
 
@@ -211,7 +238,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     private boolean updateEnemyFight() {
-        int random = new Random().nextInt(1000 - randomIndex);
+        int random = new Random().nextInt(RANDOM_BEFORE_A_FIGHT - randomIndex);
         boolean isFight = false;
 
         if (random == 0) {
@@ -274,7 +301,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        //Log.d("MOBE", "SensorChanged");
         int sensor = event.sensor.getType();
         float [] values = event.values;
 
@@ -293,16 +319,12 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         updateOrientationAngles();
 
-        int xDeg = (int) (Math.toDegrees(orientationAngles[0])+360)%360;
-        int yDeg = (int)(Math.toDegrees(orientationAngles[1])+360)%360;
-        int zDeg = (int)(Math.toDegrees(orientationAngles[2])+360)%360;
+        int calculX = (int) (Math.toDegrees(orientationAngles[0])+360)%360;
 
-        //Smooth values
-        xDeg /= 45;
-        yDeg /= 45;
-        zDeg /= 45;
+        //Smooth value and reverse orientation number
+        xDeg = (8 - calculX / 45)%8;
 
-        Log.d("Compass", "onSensorChanged: x = " + xDeg + " y = " + yDeg + " z = " + zDeg);
+        Log.d("Compass", "onSensorChanged: x = " + xDeg);
     }
 
     @Override
@@ -396,13 +418,19 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         });
     }
 
-    private void setUpCompassRunnable(){
+    private void setUpCompassRunnable(Boat boat){
         compassRunnable =  new Runnable() {
             @Override
             public void run() {
-
+                if(pressure){
+                    int x = 8 + xDeg;
+                    boat.dir = Direction.getDirection((x)%8);
+                    textTop.setText(boat.dir.toString());
+                    textLeft.setText(Direction.getDirection((x+1)%8).toString());
+                    textRight.setText(Direction.getDirection((x-1)%8).toString());
+                }
                 if (!isFighting) {
-                    handler.postDelayed(compassRunnable, 10);
+                    handler.postDelayed(compassRunnable, 1000);
                 }
             }
         };
@@ -433,11 +461,12 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         setUpCompass();
-        setUpCompassRunnable();
 
         Boat boat = new Boat(Direction.rand(), Boat.LOW_SPEED);
         Treasure treasure = new Treasure();
         coinSoundPlayer = MediaPlayer.create(this, R.raw.coin);
+
+        setUpCompassRunnable(boat);
 
         // En boucle
         View shipView = findViewById(R.id.shipView);
