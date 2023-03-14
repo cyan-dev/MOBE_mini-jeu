@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -73,8 +75,8 @@ public class NavigationGame extends AppCompatActivity {
         final static int LOW_SPEED=6;
         final static int HIGH_SPEED=10;
 
-        private Direction dir = Direction.N;
-        private int speed = LOW_SPEED; // en m/s
+        private Direction dir;
+        private int speed; // en m/s
 
         Boat(Direction dir, int speed) {
             this.dir = dir;
@@ -137,6 +139,9 @@ public class NavigationGame extends AppCompatActivity {
     private int lifePoints = 100;
     private int points = 0;
     private int randomIndex = 0;
+    private boolean pressure = false;
+    private boolean isFighting = false;
+
 
     //Views
 
@@ -146,11 +151,30 @@ public class NavigationGame extends AppCompatActivity {
     private ImageView cursorTop;
     private ImageView cursorLeft;
     private ImageView cursorRight;
+    private ImageView compass;
 
     private MediaPlayer coinSoundPlayer;
 
+    private Handler handler = new Handler();
+
+    //Runnable to change the direction of the boat
+    private Runnable compassRunnable;
+
     private void game(View shipView, Boat boat, Treasure treasure) {
-        //Cursor
+        updateCursor(boat, treasure);
+
+        isFighting = updateEnemyFight();
+        System.out.println(randomIndex);
+        if (!isFighting) {
+            updateTreasureDist(boat, treasure);
+            shipView.postDelayed(new Runnable() {
+                @Override
+                public void run() { game(shipView, boat, treasure); }
+            }, 10);
+        }
+    }
+
+    private void updateCursor(Boat boat, Treasure treasure) {
         cursorTop.setVisibility(View.INVISIBLE);
         cursorLeft.setVisibility(View.INVISIBLE);
         cursorRight.setVisibility(View.INVISIBLE);
@@ -166,16 +190,6 @@ public class NavigationGame extends AppCompatActivity {
         }else{
             Log.d("Cursor", "boat dir: " + boat.dir + " treasure dir: " + treasure.dir + " DROITE");
             cursorRight.setVisibility(View.VISIBLE);
-        }
-
-        boolean isFight = updateEnemyFight();
-        System.out.println(randomIndex);
-        if (!isFight) {
-            updateTreasureDist(boat, treasure);
-            shipView.postDelayed(new Runnable() {
-                @Override
-                public void run() { game(shipView, boat, treasure); }
-            }, 10);
         }
     }
 
@@ -252,6 +266,33 @@ public class NavigationGame extends AppCompatActivity {
         }
     }
 
+    private void setUpCompass(){
+        compass.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                Log.d("Pression", "onTouch: " + motionEvent.getAction());
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                    pressure = true;
+                } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    pressure = false;
+                }
+                return pressure;
+            }
+        });
+    }
+
+    private void setUpCompassRunnable(){
+        compassRunnable =  new Runnable() {
+            @Override
+            public void run() {
+
+                if (!isFighting) {
+                    handler.postDelayed(compassRunnable, 10);
+                }
+            }
+        };
+    }
+
     private void setUpViews(){
         //TextView
         textTop = (TextView)  this.findViewById(R.id.textTop);
@@ -262,6 +303,7 @@ public class NavigationGame extends AppCompatActivity {
         cursorTop = (ImageView)  this.findViewById(R.id.cursorTop);
         cursorLeft = (ImageView)  this.findViewById(R.id.cursorLeft);
         cursorRight = (ImageView)  this.findViewById(R.id.cursorRight);
+        compass = (ImageView) this.findViewById(R.id.compass);
     }
 
     private void initializeHUD() {
@@ -279,12 +321,16 @@ public class NavigationGame extends AppCompatActivity {
         initializeSharedPreferences();
         initializeHUD();
 
-        Boat boat = new Boat(Direction.N, Boat.LOW_SPEED);
+        setUpCompass();
+        setUpCompassRunnable();
+
+        Boat boat = new Boat(Direction.rand(), Boat.LOW_SPEED);
         Treasure treasure = new Treasure();
         coinSoundPlayer = MediaPlayer.create(this, R.raw.coin);
 
         // En boucle
         View shipView = findViewById(R.id.shipView);
         game(shipView, boat, treasure);
+        handler.postDelayed(compassRunnable, 1000);
     }
 }
