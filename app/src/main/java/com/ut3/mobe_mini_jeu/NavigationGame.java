@@ -299,7 +299,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     //Compass --------------------------------------------------------------------------------------
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         int sensor = event.sensor.getType();
@@ -320,11 +319,20 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         updateOrientationAngles();
 
-        int calculX = (int) (Math.toDegrees(orientationAngles[0])+360)%360;
+        int orientationAnglesToInt = (int) Math.toDegrees(orientationAngles[0])+360;
 
-        //Smooth value and reverse orientation number
-        xDeg = (8 - calculX / 45)%8;
+        //We split the angle between 8 Directions
+        int x = orientationAnglesToInt%360;
 
+        //Hysteresis
+        int angleInfBoundary = (x + 350)%360;
+        int angleSupBoundary = (x + 370)%360;
+
+        if(angleInfBoundary != xDeg || angleSupBoundary != xDeg) {
+            //Smooth value and reverse orientation number
+            xDeg = (8 - x / 45) % 8;
+
+        }
         Log.d("Compass", "onSensorChanged: x = " + xDeg);
     }
 
