@@ -17,7 +17,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ocean" />
 
     <ImageView
@@ -91,20 +91,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hpBar"
-        app:layout_constraintVertical_bias="0.004"
+        app:layout_constraintTop_toTopOf="@+id/ocean"
+        app:layout_constraintVertical_bias="0.052"
         app:srcCompat="@drawable/coin" />
 
     <TextView
         android:id="@+id/scoreText"
-        android:layout_width="128px"
-        android:layout_height="64px"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:textColor="#FFEB3B"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/coinImage"
         app:layout_constraintTop_toTopOf="@+id/hpBar"
-        app:layout_constraintVertical_bias="0.097" />
+        app:layout_constraintVertical_bias="0.1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
