@@ -325,8 +325,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         int x = orientationAnglesToInt%360;
 
         //Hysteresis
-        int angleInfBoundary = (x + 350)%360;
-        int angleSupBoundary = (x + 370)%360;
+        int angleInfBoundary = (x + 345)%360;
+        int angleSupBoundary = (x + 375)%360;
 
         if(angleInfBoundary != xDeg || angleSupBoundary != xDeg) {
             //Smooth value and reverse orientation number

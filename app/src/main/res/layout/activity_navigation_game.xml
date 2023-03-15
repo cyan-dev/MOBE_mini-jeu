@@ -24,6 +24,7 @@
         android:layout_width="75dp"
         android:layout_height="25dp"
         android:textColor="#FFEB3B"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/hpBarEnnemy"
@@ -75,9 +76,12 @@
         android:layout_height="30dp"
         android:max="100"
         android:progress="80"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/compass"
