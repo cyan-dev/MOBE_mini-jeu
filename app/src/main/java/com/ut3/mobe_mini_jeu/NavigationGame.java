@@ -109,10 +109,11 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     private class Boat {
         final static int LOW_SPEED = 6;
-        final static int HIGH_SPEED = 10;
+        final static int HIGH_SPEED = 18;
 
         private Direction dir;
         private int speed; // en m/s
+        private int momentum;
 
         Boat(Direction dir, int speed) {
             this.dir = dir;
@@ -125,6 +126,9 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         public void setSpeed(int speed) {
             this.speed = speed;
+            if(speed == Boat.HIGH_SPEED) {
+                setMomentum(35);
+            }
         }
 
         public Direction getDir() {
@@ -133,6 +137,14 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         public void setDir(Direction dir) {
             this.dir = dir;
+        }
+
+        public int getMomentum() {
+            return this.momentum;
+        }
+
+        public void setMomentum(int momentum) {
+            this.momentum = momentum;
         }
     }
 
@@ -207,10 +219,9 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     //Constant -------------------------------------------------------------------------------------
-    private static final int RANDOM_BEFORE_A_FIGHT = 50000;
+    private static final int RANDOM_BEFORE_A_FIGHT = 1000;
     private static final int COMPASS_REFRESHING_TIME = 100;
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private static final int SOUND_LEVEL_TO_GO_FAST = 15;
+    private static final int SOUND_LEVEL_TO_GO_FAST = 18;
 
     //Variables
     private int lifePoints = 100;
@@ -221,7 +232,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     private boolean isFighting = false;
 
     private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
@@ -262,11 +272,13 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         System.out.println(randomIndex);
         if (!isFighting) {
             updateTreasureDist(boat, treasure);
-            updateBoatSpeed(shipView, boat);
+            if (boat.getMomentum() <= 10) {
+                updateBoatSpeed(shipView, boat);
+            } else {boat.setMomentum(boat.getMomentum()-1);}
             shipView.postDelayed(new Runnable() {
                 @Override
                 public void run() { game(shipView, boat, treasure); }
-            }, 10);
+            }, 50);
         }else{
             soundMeter.stop();
         }
@@ -274,10 +286,10 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     private void updateBoatSpeed(View shipView, Boat boat){
         if(soundMeter.isLouderThan(SOUND_LEVEL_TO_GO_FAST)){
-            boat.speed = Boat.HIGH_SPEED;
+            boat.setSpeed(Boat.HIGH_SPEED);
             ((ImageView) shipView).setImageResource(R.drawable.ship1_turbo);
         }else{
-            boat.speed = Boat.LOW_SPEED;
+            boat.setSpeed(Boat.LOW_SPEED);
             ((ImageView) shipView).setImageResource(R.drawable.ship1_fast);
         }
     }
@@ -525,19 +537,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_game);
-
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                break;
-        }
-        if (!permissionToRecordAccepted) finish();
 
         initializeSharedPreferences();
         initializeHUD();
