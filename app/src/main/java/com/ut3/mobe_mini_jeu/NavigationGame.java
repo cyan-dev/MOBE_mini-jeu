@@ -1,15 +1,23 @@
 package com.ut3.mobe_mini_jeu;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import java.util.Random;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -29,8 +37,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             return Direction.values()[(new Random()).nextInt(8)];
         }
 
-        public String toString(){
-            switch (this){
+        public String toString() {
+            switch (this) {
                 case N:
                     return "N";
                 case S:
@@ -52,8 +60,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             }
         }
 
-        public int getValue(){
-            switch (this){
+        public int getValue() {
+            switch (this) {
                 case N:
                     return 0;
                 case S:
@@ -75,8 +83,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             }
         }
 
-        static Direction getDirection(int val){
-            switch (val){
+        static Direction getDirection(int val) {
+            switch (val) {
                 case 0:
                     return N;
                 case 4:
@@ -100,8 +108,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     private class Boat {
-        final static int LOW_SPEED=6;
-        final static int HIGH_SPEED=10;
+        final static int LOW_SPEED = 6;
+        final static int HIGH_SPEED = 10;
 
         private Direction dir;
         private int speed; // en m/s
@@ -129,8 +137,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     private class Treasure {
-        final static int MIN_DIST=1000;
-        final static int MAX_DIST=1500;
+        final static int MIN_DIST = 1000;
+        final static int MAX_DIST = 1500;
 
         private Direction dir;
         private int dist;
@@ -157,15 +165,52 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         public void generate() {
             this.dir = Direction.rand();
-            this.dist = (new Random()).nextInt(Treasure.MAX_DIST- Treasure.MIN_DIST)+ Treasure.MIN_DIST;
+            this.dist = (new Random()).nextInt(Treasure.MAX_DIST - Treasure.MIN_DIST) + Treasure.MIN_DIST;
             points = this.dist;
         }
     }
 
-    //Constant -------------------------------------------------------------------------------------
-    private final int RANDOM_BEFORE_A_FIGHT = 50000;
-    private final int COMPASS_REFRESHING_TIME = 100;
+    private class SoundMeter {
+        private int audioBufferMinSize;
+        private AudioRecord audioRecord = null;
 
+        public void start(Context context) {
+            audioBufferMinSize = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, audioBufferMinSize);
+                audioRecord.startRecording();
+            }else{
+                Intent intent = new Intent(context, MainMenu.class);
+                startActivity(intent);
+            }
+        }
+
+        public void stop() {
+            if (audioRecord != null) {
+                audioRecord.stop();
+            }
+        }
+
+        public boolean isLouderThan(int soundLevel) {
+            short[] buffer = new short[audioBufferMinSize];
+            audioRecord.read(buffer, 0, audioBufferMinSize);
+
+            for (short sample : buffer)
+            {
+                if (20 * Math.log10(Math.abs(sample) / 2700.0) > soundLevel)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    //Constant -------------------------------------------------------------------------------------
+    private static final int RANDOM_BEFORE_A_FIGHT = 50000;
+    private static final int COMPASS_REFRESHING_TIME = 100;
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static final int SOUND_LEVEL_TO_GO_FAST = 15;
 
     //Variables
     private int lifePoints = 100;
@@ -174,6 +219,9 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     private int xDeg = 0;
     private boolean pressure = false;
     private boolean isFighting = false;
+
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
@@ -194,6 +242,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     //Other
 
+    private SoundMeter soundMeter;
+
     private SensorManager sensorManager = null;
 
     private MediaPlayer coinSoundPlayer;
@@ -212,10 +262,23 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         System.out.println(randomIndex);
         if (!isFighting) {
             updateTreasureDist(boat, treasure);
+            updateBoatSpeed(shipView, boat);
             shipView.postDelayed(new Runnable() {
                 @Override
                 public void run() { game(shipView, boat, treasure); }
             }, 10);
+        }else{
+            soundMeter.stop();
+        }
+    }
+
+    private void updateBoatSpeed(View shipView, Boat boat){
+        if(soundMeter.isLouderThan(SOUND_LEVEL_TO_GO_FAST)){
+            boat.speed = Boat.HIGH_SPEED;
+            ((ImageView) shipView).setImageResource(R.drawable.ship1_turbo);
+        }else{
+            boat.speed = Boat.LOW_SPEED;
+            ((ImageView) shipView).setImageResource(R.drawable.ship1_fast);
         }
     }
 
@@ -460,9 +523,21 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation_game);
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted) finish();
 
         initializeSharedPreferences();
         initializeHUD();
@@ -476,6 +551,9 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         coinSoundPlayer = MediaPlayer.create(this, R.raw.coin);
 
         setUpCompassRunnable(boat);
+
+        soundMeter = new SoundMeter();
+        soundMeter.start(this);
 
         // En boucle
         View shipView = findViewById(R.id.shipView);
