@@ -164,6 +164,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     //Constant -------------------------------------------------------------------------------------
     private final int RANDOM_BEFORE_A_FIGHT = 50000;
+    private final int COMPASS_REFRESHING_TIME = 100;
 
 
     //Variables
@@ -430,7 +431,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
                     textRight.setText(Direction.getDirection((x-1)%8).toString());
                 }
                 if (!isFighting) {
-                    handler.postDelayed(compassRunnable, 1000);
+                    handler.postDelayed(compassRunnable, COMPASS_REFRESHING_TIME);
                 }
             }
         };
