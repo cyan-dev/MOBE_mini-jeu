@@ -22,12 +22,14 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView titleLabel = (TextView) this.findViewById(R.id.titleLabel);
+        TextView bestScoreLabel = (TextView) this.findViewById(R.id.bestScoreLabel);
+        TextView lastScoreLabel = (TextView) this.findViewById(R.id.lastScoreLabel);
+
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
-        if (prefs.contains("score")) {
-            int score = prefs.getInt("score", 0);
-            if (score != 0) titleLabel.setText("Score : " + prefs.getInt("score", 0));
-        }
+
+        bestScoreLabel.setText("Best : " + prefs.getInt("bestScore", 0));
+        lastScoreLabel.setText("Last : " + prefs.getInt("score", 0));
+
 
         if(!mic_acces) {
             ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);

@@ -102,6 +102,7 @@ public class GameFight extends AppCompatActivity {
 
             //Changing activity
             if(shipDown){
+                updateBestScore();
                 changingActivityMainMenu();
             }else if(enemyShipDown){
                 //Update of the score
@@ -121,6 +122,16 @@ public class GameFight extends AppCompatActivity {
 
         }
     };
+
+    private void updateBestScore() {
+        int score = prefs.getInt("score", 0);
+        int bestScore = prefs.getInt("bestScore", 0);
+        if (score > bestScore) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("bestScore", score);
+            editor.apply();
+        }
+    }
 
     private void pressureBeforeShooting(){
         //If a pressure is detect increase the damage inflict
