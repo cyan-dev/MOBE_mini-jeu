@@ -20,7 +20,6 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,81 +28,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class NavigationGame extends AppCompatActivity implements SensorEventListener {
-    //Inner Class ----------------------------------------------------------------------------------
+    /*
+     * This enum gives the 8 directions the boat and treasure can have
+     * These are the 8 cardinal points
+     */
     enum Direction {
-        N, S, E, O, NE, NO, SE, SO;
+        N, NO, O, SO, S, SE, E, NE;
 
         static Direction rand() {
             return Direction.values()[(new Random()).nextInt(8)];
-        }
-
-        public String toString() {
-            switch (this) {
-                case N:
-                    return "N";
-                case S:
-                    return "S";
-                case E:
-                    return "E";
-                case O:
-                    return "O";
-                case NE:
-                    return "NE";
-                case NO:
-                    return "NO";
-                case SE:
-                    return "SE";
-                case SO:
-                    return "SO";
-                default:
-                    return "NO DIRECTION";
-            }
-        }
-
-        public int getValue() {
-            switch (this) {
-                case N:
-                    return 0;
-                case S:
-                    return 4;
-                case E:
-                    return 6;
-                case O:
-                    return 2;
-                case NE:
-                    return 7;
-                case NO:
-                    return 1;
-                case SE:
-                    return 5;
-                case SO:
-                    return 3;
-                default:
-                    return -1;
-            }
-        }
-
-        static Direction getDirection(int val) {
-            switch (val) {
-                case 0:
-                    return N;
-                case 4:
-                    return S;
-                case 6:
-                    return E;
-                case 2:
-                    return O;
-                case 7:
-                    return NE;
-                case 1:
-                    return NO;
-                case 5:
-                    return SE;
-                case 3:
-                    return SO;
-                default:
-                    return null;
-            }
         }
     }
 
@@ -135,10 +68,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             return dir;
         }
 
-        public void setDir(Direction dir) {
-            this.dir = dir;
-        }
-
         public int getMomentum() {
             return this.momentum;
         }
@@ -161,10 +90,6 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         public Direction getDir() {
             return dir;
-        }
-
-        public void setDir(Direction dir) {
-            this.dir = dir;
         }
 
         public int getDist() {
@@ -207,10 +132,8 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             short[] buffer = new short[audioBufferMinSize];
             audioRecord.read(buffer, 0, audioBufferMinSize);
 
-            for (short sample : buffer)
-            {
-                if (20 * Math.log10(Math.abs(sample) / 2700.0) > soundLevel)
-                {
+            for (short sample : buffer) {
+                if (20 * Math.log10(Math.abs(sample) / 2700.0) > soundLevel) {
                     return true;
                 }
             }
@@ -218,46 +141,32 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         }
     }
 
-    //Constant -------------------------------------------------------------------------------------
+    // Constant -------------------------------------------------------------------------------------
     private static final int RANDOM_BEFORE_A_FIGHT = 1000;
     private static final int COMPASS_REFRESHING_TIME = 100;
-    private static final int SOUND_LEVEL_TO_GO_FAST = 18;
+    private static final int SOUND_LEVEL_TO_TURBO = 18;
 
-    //Variables
-    private int lifePoints = 100;
+    //Views
+    private TextView cardinalTopLabel, cardinalLeftLabel, cardinalRightLabel;
+    private ImageView pointerTopImage, pointerLeftImage, pointerRightLabel;
+    private ImageView compassButton;
+
+    // Variables
     private int points = 0;
     private int randomIndex = 0;
-    private int xDeg = 0;
+    private int measuredDirection = 0;
     private boolean pressure = false;
     private boolean isFighting = false;
-
-    private boolean permissionToRecordAccepted = false;
-
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
-
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
 
 
-    //Views
-
-    private TextView textTop;
-    private TextView textLeft;
-    private TextView textRight;
-    private ImageView cursorTop;
-    private ImageView cursorLeft;
-    private ImageView cursorRight;
-    private ImageView compass;
-
     //Other
-
     private SoundMeter soundMeter;
-
     private SensorManager sensorManager = null;
-
     private MediaPlayer coinSoundPlayer;
-
     private Handler handler = new Handler();
 
     //Runnable to change the direction of the boat
@@ -267,6 +176,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
     private void game(View shipView, Boat boat, Treasure treasure) {
         updateCursor(boat, treasure);
+        updateCardinalLabels(boat);
 
         isFighting = updateEnemyFight();
         System.out.println(randomIndex);
@@ -275,7 +185,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
             if (boat.getMomentum() <= 10) {
                 updateBoatSpeed(shipView, boat);
             } else {boat.setMomentum(boat.getMomentum()-1);}
-            shipView.postDelayed(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() { game(shipView, boat, treasure); }
             }, 50);
@@ -285,7 +195,7 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     private void updateBoatSpeed(View shipView, Boat boat){
-        if(soundMeter.isLouderThan(SOUND_LEVEL_TO_GO_FAST)){
+        if(soundMeter.isLouderThan(SOUND_LEVEL_TO_TURBO)){
             boat.setSpeed(Boat.HIGH_SPEED);
             ((ImageView) shipView).setImageResource(R.drawable.ship1_turbo);
         }else{
@@ -295,21 +205,27 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
     }
 
     private void updateCursor(Boat boat, Treasure treasure) {
-        cursorTop.setVisibility(View.INVISIBLE);
-        cursorLeft.setVisibility(View.INVISIBLE);
-        cursorRight.setVisibility(View.INVISIBLE);
-        if(boat.dir.getValue() == treasure.dir.getValue()){
-            Log.d("Cursor", "boat dir: " + boat.dir + " treasure dir: " + treasure.dir + " DEVANT");
-            cursorTop.setVisibility(View.VISIBLE);
-        }else if((boat.dir.getValue()+1)%8 == treasure.dir.getValue() ||
-                (boat.dir.getValue()+2)%8 == treasure.dir.getValue() ||
-                (boat.dir.getValue()+3)%8 == treasure.dir.getValue()
-        ){
-            Log.d("Cursor", "boat dir: " + boat.dir + " treasure dir: " + treasure.dir + " GAUCHE");
-            cursorLeft.setVisibility(View.VISIBLE);
-        }else{
-            Log.d("Cursor", "boat dir: " + boat.dir + " treasure dir: " + treasure.dir + " DROITE");
-            cursorRight.setVisibility(View.VISIBLE);
+        pointerTopImage.setVisibility(View.INVISIBLE);
+        pointerLeftImage.setVisibility(View.INVISIBLE);
+        pointerRightLabel.setVisibility(View.INVISIBLE);
+
+        int boatDirection = Direction.valueOf(boat.dir.toString()).ordinal();
+        int treasureDirection = Direction.valueOf(treasure.dir.toString()).ordinal();
+
+        // If treasure is in front
+        if (boat.dir == treasure.dir){
+            pointerTopImage.setVisibility(View.VISIBLE);
+        }
+        // If treasure is on the left
+        else if ((boatDirection + 1 ) % 8 == treasureDirection ||
+                (boatDirection + 2 ) % 8 == treasureDirection ||
+                (boatDirection + 3 ) % 8 == treasureDirection) {
+            pointerLeftImage.setVisibility(View.VISIBLE);
+        }
+        // Else, treasure in on the right or behind
+        // So we choose to show on the right
+        else {
+            pointerRightLabel.setVisibility(View.VISIBLE);
         }
     }
 
@@ -403,29 +319,20 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         int angleInfBoundary = (x + 345)%360;
         int angleSupBoundary = (x + 375)%360;
 
-        if(angleInfBoundary != xDeg || angleSupBoundary != xDeg) {
+        if(angleInfBoundary != measuredDirection || angleSupBoundary != measuredDirection) {
             //Smooth value and reverse orientation number
-            xDeg = (8 - x / 45) % 8;
+            measuredDirection = (8 - x / 45) % 8;
 
         }
-        Log.d("Compass", "onSensorChanged: x = " + xDeg);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Get updates from the accelerometer and magnetometer at a constant rate.
-        // To make batch operations more efficient and reduce power consumption,
-        // provide support for delaying updates to the application.
-        //
-        // In this example, the sensor reporting delay is small enough such that
-        // the application receives an update before the system checks the sensor
-        // readings again.
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer,
@@ -487,11 +394,10 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         }
     }
 
-    private void setUpCompass(){
-        compass.setOnTouchListener(new View.OnTouchListener() {
+    private void setUpCompassButton(){
+        compassButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.d("Pression", "onTouch: " + motionEvent.getAction());
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     pressure = true;
                 } else if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
@@ -502,35 +408,36 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
         });
     }
 
-    private void setUpCompassRunnable(Boat boat){
-        compassRunnable =  new Runnable() {
-            @Override
-            public void run() {
-                if(pressure){
-                    int x = 8 + xDeg;
-                    boat.dir = Direction.getDirection((x)%8);
-                    textTop.setText(boat.dir.toString());
-                    textLeft.setText(Direction.getDirection((x+1)%8).toString());
-                    textRight.setText(Direction.getDirection((x-1)%8).toString());
-                }
-                if (!isFighting) {
-                    handler.postDelayed(compassRunnable, COMPASS_REFRESHING_TIME);
-                }
-            }
-        };
+    /**
+     * Update direction labels on the display
+     * if a pressure is detected on the compass button
+     *
+     * @param boat boat that will give its direction
+     */
+    private void updateCardinalLabels(Boat boat){
+        if(pressure){
+            int currentDirection = 8 + measuredDirection;
+            boat.dir = Direction.values()[currentDirection % 8];
+            cardinalTopLabel.setText(boat.dir.toString());
+            cardinalLeftLabel.setText(Direction.values()[(currentDirection + 1) % 8].toString());
+            cardinalRightLabel.setText(Direction.values()[(currentDirection - 1) % 8].toString());
+        }
     }
 
+    /**
+     * Get all useful views from the layouts
+     */
     private void setUpViews(){
         //TextView
-        textTop = (TextView)  this.findViewById(R.id.textTop);
-        textLeft = (TextView)  this.findViewById(R.id.textLeft);
-        textRight = (TextView)  this.findViewById(R.id.textRight);
+        cardinalTopLabel = (TextView)  this.findViewById(R.id.textTop);
+        cardinalLeftLabel = (TextView)  this.findViewById(R.id.textLeft);
+        cardinalRightLabel = (TextView)  this.findViewById(R.id.textRight);
 
         //ImageView
-        cursorTop = (ImageView)  this.findViewById(R.id.cursorTop);
-        cursorLeft = (ImageView)  this.findViewById(R.id.cursorLeft);
-        cursorRight = (ImageView)  this.findViewById(R.id.cursorRight);
-        compass = (ImageView) this.findViewById(R.id.compass);
+        pointerTopImage = (ImageView)  this.findViewById(R.id.cursorTop);
+        pointerLeftImage = (ImageView)  this.findViewById(R.id.cursorLeft);
+        pointerRightLabel = (ImageView)  this.findViewById(R.id.cursorRight);
+        compassButton = (ImageView) this.findViewById(R.id.compass);
     }
 
     @Override
@@ -543,13 +450,13 @@ public class NavigationGame extends AppCompatActivity implements SensorEventList
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        setUpCompass();
+        setUpCompassButton();
 
         Boat boat = new Boat(Direction.rand(), Boat.LOW_SPEED);
         Treasure treasure = new Treasure();
         coinSoundPlayer = MediaPlayer.create(this, R.raw.coin);
 
-        setUpCompassRunnable(boat);
+        updateCardinalLabels(boat);
 
         soundMeter = new SoundMeter();
         soundMeter.start(this);

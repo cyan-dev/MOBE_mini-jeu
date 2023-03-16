@@ -46,7 +46,7 @@
         app:srcCompat="@drawable/ship1_fast" />
 
     <TextView
-        android:id="@+id/titleTxt"
+        android:id="@+id/titleLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Yarrrrh!"
