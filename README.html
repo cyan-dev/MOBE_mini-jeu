@@ -1,0 +1,60 @@
+<h1 id="mobe-mini-jeu-yarrrrh">MOBE Mini jeu : “Yarrrrh!”</h1>
+<blockquote>
+<p>Un petit jeu de pirate qui cherche des trésors et se bat contre d’autres pirates.<br />
+#simple #runner #arcade #score</p>
+</blockquote>
+<p><strong>Groupe</strong> : Saucisse!<br />
+<strong>Membres</strong> : Cyril Esclassan, Dylan Caron, Florian Azizen<br />
+<strong>Capteurs</strong> : Microphone, Boussole, Tactile<br />
+<strong>Dépôt GitHub</strong> : https://github.com/cyan-dev/MOBE_mini-jeu</p>
+<h2 id="installation">Installation</h2>
+<h3 id="via-lapk">Via l’APK</h3>
+<p>Nous avons fait une APK de l’application, celle ci est disponible dans l’archive déposé sur Moodle ou dans la partie Release sur GitHub.</p>
+<h3 id="via-android-studio">Via Android Studio</h3>
+<p>Il vous suffit de cloner le projet et de build avec Android Studio.</p>
+<h2 id="description-de-lapplication">Description de l’application</h2>
+<h3 id="ecran-1-main-menu">Ecran 1 : Main Menu</h3>
+<p>De haut en bas :</p>
+<ul>
+<li>Nom du jeu</li>
+<li>Meilleur score</li>
+<li>Dernier score</li>
+<li>Sprite du batteau</li>
+<li>Bouton Play</li>
+</ul>
+<h3 id="ecran-2-navigation">Ecran 2 : Navigation</h3>
+<p>De haut en bas :</p>
+<ul>
+<li>Barre de points de vie restants</li>
+<li>Pièces d’or (Score)</li>
+<li>Caps (Direction actuelle et caps tribord/bâbord)</li>
+<li>Curseur (Indique la direction à prendre)</li>
+<li>Batteau (Sprite dynamique)</li>
+<li>Boussole (Permet de changer de cap)</li>
+</ul>
+<p>Le bateau avance à vitesse constante vers un des huit caps (Nord, Nord Est, Est, Sud Est, Sud, Sud Ouest, Ouest, Nord Ouest).</p>
+<p>Un trésor apparait sur un cap, il faut aller le chercher pour marquer des points. Dés qu’un trésor est récupéré, un nouveau se génère.</p>
+<p>On peut temporairement augmenter la vitesse du bateau en soufflant pour gonfler les voiles ou en criant pour motiver l’équipage.<br />
+<strong>Capteur</strong> : Microphone</p>
+<p>Un appuis prolongé ou un tapotement sur le bouton “Boussole” permet d’orienter le bateau selon le sens de la boussole du périphérique.<br />
+<strong>Capteur</strong> : Boussole</p>
+<p>Des combats se déclenchent aléatoirement et régulièrement.</p>
+<h3 id="ecran-3-fight">Ecran 3 : Fight</h3>
+<p>De haut en bas :</p>
+<ul>
+<li>Barre de points de vie restants</li>
+<li>Pièces d’or (Score)</li>
+<li>Batteau (Sprite dynamique)</li>
+<li>Batteau ennemi (Sprite dynamique)</li>
+<li>Barre de points de vie de l’ennemi</li>
+<li>Barre/Bouton de chargement des cannons</li>
+</ul>
+<p>L’ennemi tire régulièrement et retire une quantité fixe de points de vie.</p>
+<p>Pour tirer il faut maintenir le bouton de chargement des canons. Lorsqu’il atteint 100%, le chargement rebondit et se décrémente. Le but est de charger son coup au maximum et de lâcher au bon moment. <strong>Capteur</strong> : Tactile</p>
+<p>Chaque tir de notre batteau produit une petite vibration.</p>
+<p>Si la barre de points de vie du batteau tombe à zero, c’est la fin de la partie. Retour au menu principal.</p>
+<p>Si la barre de points de vie de l’ennemi tombe à zero, on gagne le combat, cela augmente notre score. Retour à la navigation.</p>
+<h2 id="points-supplémentaires">Points supplémentaires</h2>
+<p>Le score et les points de vie sont conservés et transmits grace aux <code>shared preferences</code>.</p>
+<p>Une demande d’accès au microphone apparait à la première ouverture de l’application.</p>
+<p>Tous les sprites et SFXs sont libres de droit, nous les avons conçu spécialement pour le projet.</p>
